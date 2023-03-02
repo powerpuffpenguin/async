@@ -1,15 +1,16 @@
 package future
 
 // Wrapping a future value is usually used to store asynchronous results
+//
 // like dart Future<T>
-type Future struct {
-	value  interface{}
-	err    error
-	c      chan struct{}
+type Future[T any] struct {
+	value T
+	err   error
+	c     chan struct{}
 }
 
 // Return a chan and wait until notification when the Future is completed
-func (f *Future) C() <-chan struct{} {
+func (f *Future[T]) C() <-chan struct{} {
 	return f.c
 }
 
@@ -20,12 +21,12 @@ func (f *Future) C() <-chan struct{} {
 //
 // <-f.C()
 // f.Value()
-func (f *Future) Value() (interface{}, error) {
+func (f *Future[T]) Value() (T, error) {
 	return f.value, f.err
 }
 
 // Return the set value after the Future is set to a valid value
-func (f *Future) Get() (interface{}, error) {
+func (f *Future[T]) Get() (T, error) {
 	<-f.c
 	return f.value, f.err
 }
